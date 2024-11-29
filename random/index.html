@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>Random Image</title>
+</head>
+<body style="margin:0; padding:0;">
+    <img id="randomImage" style="width:100%; height:100%; object-fit:cover;">
     <script>
-        // 图片列表，包含random文件夹下的所有图片
+        // 设置基础URL
+        const baseUrl = 'https://raw.githubusercontent.com/yuhanbo758/image/main';
+        
+        // 将所有图片路径存储在数组中
         const images = [
             '/random/10600.jpg',
             '/random/10832.jpg',
@@ -48,14 +56,12 @@
             '/random/5551.jpg',
         ];
         
-        // 随机选择一张图片并重定向
+        // 直接显示随机图片而不是重定向
         window.onload = function() {
+            const img = document.getElementById('randomImage');
             const randomImage = images[Math.floor(Math.random() * images.length)];
-            window.location.href = randomImage;
+            img.src = baseUrl + randomImage;  // 拼接完整URL
         }
     </script>
-</head>
-<body>
-    Redirecting...
 </body>
-</html> 
+</html>
