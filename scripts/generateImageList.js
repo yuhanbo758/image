@@ -4,36 +4,48 @@ const path = require('path');
 
 const owner = 'yuhanbo758';
 const repo = 'image';
-const branch = 'main'; // 或者是 master，取决于您的默认分支
 
-function fetchGitHubContent(path = '') {
+function fetchGitHubContent() {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'api.github.com',
-      path: `/repos/${owner}/${repo}/contents/${path}`,
+      path: `/repos/${owner}/${repo}/contents/ramdom`,
       headers: {
         'User-Agent': 'Node.js',
+        'Accept': 'application/vnd.github.v3+json',
       },
     };
 
     https.get(options, (res) => {
       let data = '';
       res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => resolve(JSON.parse(data)));
+      res.on('end', () => {
+        try {
+          const jsonData = JSON.parse(data);
+          if (res.statusCode === 200) {
+            resolve(jsonData);
+          } else {
+            reject(new Error(`GitHub API returned status ${res.statusCode}: ${jsonData.message}`));
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
     }).on('error', reject);
   });
 }
 
 async function generateImageList() {
   try {
-    const contents = await fetchGitHubContent('random');
+    const contents = await fetchGitHubContent();
     const images = contents
       .filter(item => item.type === 'file')
-      .map(file => `https://image.sanrenjz.com/random/${file.name}`);
+      .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file.name))
+      .map(file => `https://raw.githubusercontent.com/${owner}/${repo}/main/ramdom/${file.name}`);
 
     const outputDir = path.join(process.cwd(), 'public');
     if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir);
+      fs.mkdirSync(outputDir, { recursive: true });
     }
 
     fs.writeFileSync(

@@ -4,8 +4,18 @@ import path from 'path';
 export default function handler(req, res) {
   try {
     const imageListPath = path.join(process.cwd(), 'public', 'imageList.json');
+    
+    // 检查文件是否存在
+    if (!fs.existsSync(imageListPath)) {
+      return res.status(500).json({ error: 'Image list not generated. Please run build first.' });
+    }
+
     const images = JSON.parse(fs.readFileSync(imageListPath, 'utf8'));
     
+    if (!images || images.length === 0) {
+      return res.status(500).json({ error: 'No images available' });
+    }
+
     const randomImage = images[Math.floor(Math.random() * images.length)];
     
     // 设置 CORS 头，允许从任何域名访问
@@ -20,6 +30,7 @@ export default function handler(req, res) {
       res.redirect(307, randomImage);
     }
   } catch (error) {
+    console.error('API Error:', error);
     res.status(500).json({ error: 'Failed to get random image' });
   }
 } 
