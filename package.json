@@ -6,7 +6,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/generateImageList.js && next build",
     "start": "next start"
   }
 } 
