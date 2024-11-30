@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "pages/api/random.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/random", "dest": "/pages/api/random.js" }
+  ]
+} 
