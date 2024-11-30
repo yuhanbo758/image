@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="0; url=" id="meta-refresh">
+    <script>
+        const images = [
+            'https://raw.githubusercontent.com/yuhanbo758/image/main/random/10600.jpg',
+            'https://raw.githubusercontent.com/yuhanbo758/image/main/random/10832.jpg',
+            'https://raw.githubusercontent.com/yuhanbo758/image/main/random/14657.jpg',
+            // ... 其他图片完整URL
+        ];
+        
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        document.getElementById('meta-refresh').content = "0; url=" + randomImage;
+    </script>
+</head>
+</html>
