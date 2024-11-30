@@ -1,20 +1,51 @@
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-// 指定图片目录的路径（相对于项目根目录）
-const imageDir = path.join(process.cwd(), 'public', 'random');
+const owner = 'yuhanbo758';
+const repo = 'image';
+const branch = 'main'; // 或者是 master，取决于您的默认分支
 
-// 读取目录中的文件
-const files = fs.readdirSync(imageDir)
-  .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
+function fetchGitHubContent(path = '') {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${owner}/${repo}/contents/${path}`,
+      headers: {
+        'User-Agent': 'Node.js',
+      },
+    };
 
-// 生成文件列表
-const fileContent = `export const imageFiles = ${JSON.stringify(files, null, 2)};`;
+    https.get(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => (data += chunk));
+      res.on('end', () => resolve(JSON.parse(data)));
+    }).on('error', reject);
+  });
+}
 
-// 写入文件
-fs.writeFileSync(
-  path.join(process.cwd(), 'data', 'imageList.js'),
-  fileContent
-);
+async function generateImageList() {
+  try {
+    const contents = await fetchGitHubContent('random');
+    const images = contents
+      .filter(item => item.type === 'file')
+      .map(file => `https://image.sanrenjz.com/random/${file.name}`);
 
-console.log('Image list generated successfully!'); 
+    const outputDir = path.join(process.cwd(), 'public');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir);
+    }
+
+    fs.writeFileSync(
+      path.join(outputDir, 'imageList.json'),
+      JSON.stringify(images, null, 2)
+    );
+
+    console.log(`Generated image list with ${images.length} images`);
+  } catch (error) {
+    console.error('Error generating image list:', error);
+    process.exit(1);
+  }
+}
+
+generateImageList(); 
