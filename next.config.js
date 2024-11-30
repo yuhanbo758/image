@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  images: {
-    unoptimized: true,
-    domains: ['raw.githubusercontent.com'],
-  },
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: 'https://raw.githubusercontent.com/yuhanbo758/image/main/:path*',
+      },
+    ]
+  }
 }
 
 module.exports = nextConfig 
